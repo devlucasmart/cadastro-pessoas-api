@@ -3,10 +3,7 @@ package com.devlucasmart.cadastropessoas.service;
 import com.devlucasmart.cadastropessoas.comum.exception.ValidacaoException;
 import com.devlucasmart.cadastropessoas.dto.endereco.EnderecoRequest;
 import com.devlucasmart.cadastropessoas.dto.endereco.EnderecoResponse;
-import com.devlucasmart.cadastropessoas.dto.pessoa.PessoaRequest;
-import com.devlucasmart.cadastropessoas.dto.pessoa.PessoaResponse;
 import com.devlucasmart.cadastropessoas.mapper.EnderecoMapper;
-import com.devlucasmart.cadastropessoas.mapper.PessoaMapper;
 import com.devlucasmart.cadastropessoas.model.EnderecoModel;
 import com.devlucasmart.cadastropessoas.model.PessoaModel;
 import com.devlucasmart.cadastropessoas.repository.EnderecoRespository;
@@ -29,12 +26,12 @@ public class EnderecoService {
     }
 
     public EnderecoResponse findById(Integer id) {
-        var endereco = getById(id);
+        var endereco = validaEndereco(id);
         return mapper.toResponse(endereco);
     }
 
     public EnderecoResponse save(EnderecoRequest request) {
-        var pessoa = pessoaRepository.findById(request.getPessoa().getId()).orElseThrow(() -> new ValidacaoException("Pessoa Não encontrada"));
+        var pessoa = validaPessoa(request.getPessoa().getId());
         var endereco = mapper.toDomain(request);
         endereco.setEnderecoPrincipal(request.getEnderecoPrincipal());
         endereco.setPessoa(pessoa);
@@ -43,7 +40,8 @@ public class EnderecoService {
     }
 
     public EnderecoResponse update(Integer id, EnderecoRequest request) {
-        var enderecoExistente = getById(id);
+        validaPessoa(request.getPessoa().getId());
+        var enderecoExistente = validaEndereco(id);
         var endereco = mapper.toDomain(request);
         endereco.setEnderecoPrincipal(request.getEnderecoPrincipal());
         endereco.setId(enderecoExistente.getId());
@@ -51,11 +49,16 @@ public class EnderecoService {
     }
 
     public void delete(Integer id) {
-        var endereco = getById(id);
+        var endereco = validaEndereco(id);
         repository.deleteById(endereco.getId());
     }
 
-    private EnderecoModel getById(Integer id) {
+    private PessoaModel validaPessoa(Integer id) {
+        return pessoaRepository.findById(id)
+                .orElseThrow(() -> new ValidacaoException("Pessoa Não Encontrada!!"));
+    }
+
+    private EnderecoModel validaEndereco(Integer id) {
         return repository.findById(id).orElseThrow(() -> new ValidacaoException("Endereco não Encontrado!!"));
     }
 }

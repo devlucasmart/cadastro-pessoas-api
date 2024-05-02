@@ -4,7 +4,6 @@ import com.devlucasmart.cadastropessoas.dto.endereco.EnderecoRequest;
 import com.devlucasmart.cadastropessoas.dto.endereco.EnderecoResponse;
 import com.devlucasmart.cadastropessoas.service.EnderecoService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +22,7 @@ import java.util.List;
 @RequestMapping("api/endereco")
 public class EnderecoController {
     private final EnderecoService service;
+
     @GetMapping
     public ResponseEntity<List<EnderecoResponse>> findAll() {
         return ResponseEntity.ok().body(service.findAll());
@@ -37,10 +37,9 @@ public class EnderecoController {
     public ResponseEntity<?> save(@RequestBody EnderecoRequest request) {
         var endereco = service.save(request);
 
-        var uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(endereco.getId()).toUri();
-        var header = new HttpHeaders();
-        header.add("id", endereco.getId().toString());
+        var uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .buildAndExpand(endereco)
+                .toUri();
 
         return ResponseEntity.created(uri).build();
     }
@@ -52,7 +51,7 @@ public class EnderecoController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<?> delete(@PathVariable Integer id){
+    public ResponseEntity<?> delete(@PathVariable Integer id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }

@@ -4,7 +4,6 @@ import com.devlucasmart.cadastropessoas.dto.pessoa.PessoaRequest;
 import com.devlucasmart.cadastropessoas.dto.pessoa.PessoaResponse;
 import com.devlucasmart.cadastropessoas.service.PessoaService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,10 +37,9 @@ public class PessoaController {
     public ResponseEntity<?> save(@RequestBody PessoaRequest request) {
         var pessoa = service.save(request);
 
-        var uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(pessoa.getId()).toUri();
-        var header = new HttpHeaders();
-        header.add("id", pessoa.getId().toString());
+        var uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .buildAndExpand(pessoa)
+                .toUri();
 
         return ResponseEntity.created(uri).build();
     }
@@ -53,7 +51,7 @@ public class PessoaController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<?> delete(@PathVariable Integer id){
+    public ResponseEntity<?> delete(@PathVariable Integer id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }

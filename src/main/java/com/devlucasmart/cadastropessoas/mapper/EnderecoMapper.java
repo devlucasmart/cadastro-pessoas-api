@@ -12,8 +12,6 @@ import java.util.List;
 public interface EnderecoMapper {
     EnderecoModel toDomain(EnderecoRequest request);
 
-    EnderecoRequest toRequest(EnderecoModel endereco);
-
     @Mapping(target = "pessoa.endereco", ignore = true)
     EnderecoResponse toResponse(EnderecoModel endereco);
 

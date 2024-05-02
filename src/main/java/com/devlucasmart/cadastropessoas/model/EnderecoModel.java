@@ -23,7 +23,7 @@ import java.io.Serializable;
 @Builder
 @Entity
 @Table(name = "tb_endereco")
-public class EnderecoModel implements Serializable{
+public class EnderecoModel implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

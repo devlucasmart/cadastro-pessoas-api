@@ -11,8 +11,9 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface PessoaMapper {
     PessoaModel toDomain(PessoaRequest request);
-    PessoaRequest toRequest(PessoaModel pessoa);
+
     @Mapping(target = "endereco.pessoa", ignore = true)
     PessoaResponse toResponse(PessoaModel pessoa);
+
     List<PessoaResponse> toListResponse(List<PessoaModel> pessoa);
 }

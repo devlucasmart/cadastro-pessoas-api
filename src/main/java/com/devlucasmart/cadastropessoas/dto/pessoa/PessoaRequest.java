@@ -1,6 +1,5 @@
 package com.devlucasmart.cadastropessoas.dto.pessoa;
 
-import com.devlucasmart.cadastropessoas.model.EnderecoModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
