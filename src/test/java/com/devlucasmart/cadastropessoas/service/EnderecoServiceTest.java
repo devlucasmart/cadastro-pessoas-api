@@ -20,6 +20,7 @@ import java.util.Optional;
 import static com.devlucasmart.cadastropessoas.helper.EnderecoHelper.umEndereco;
 import static com.devlucasmart.cadastropessoas.helper.EnderecoHelper.umEnderecoNovo;
 import static com.devlucasmart.cadastropessoas.helper.EnderecoHelper.umEnderecoRequest;
+import static com.devlucasmart.cadastropessoas.helper.PessoaHelper.umaPessoa;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -110,25 +111,45 @@ public class EnderecoServiceTest {
         var enderecoExistente = umEndereco();
         var enderecoAtualizado = umEnderecoNovo(request);
 
+        doReturn(Optional.of(umaPessoa())).when(pessoaRepository).findById(1);
         doReturn(Optional.of(enderecoExistente)).when(repository).findById(1);
         doReturn(enderecoAtualizado).when(mapper).toDomain(request);
         doReturn(enderecoAtualizado).when(repository).save(enderecoAtualizado);
 
         service.update(1, request);
 
+        verify(pessoaRepository).findById(1);
+        verify(repository).findById(1);
         verify(repository).save(enderecoAtualizado);
         verify(mapper).toDomain(request);
         verify(mapper).toResponse(enderecoAtualizado);
     }
 
     @Test
+    public void update_deveRetornarExceptionPessoaNaoExistente() {
+        doReturn(Optional.empty()).when(pessoaRepository).findById(1);
+
+        assertThatThrownBy(() -> service.update(1, umEnderecoRequest()))
+                .isInstanceOf(ValidacaoException.class)
+                .hasMessage("Pessoa Não Encontrada!!");
+
+        verify(pessoaRepository).findById(1);
+        verify(repository, never()).findById(1);
+        verify(repository, never()).save(any());
+        verify(mapper, never()).toDomain(any());
+        verify(mapper, never()).toResponse(any());
+    }
+
+    @Test
     public void update_deveRetornarExceptionQuandoEnderecoNaoExistente() {
+        doReturn(Optional.of(umaPessoa())).when(pessoaRepository).findById(1);
         doReturn(Optional.empty()).when(repository).findById(1);
 
         assertThatThrownBy(() -> service.update(1, umEnderecoRequest()))
                 .isInstanceOf(ValidacaoException.class)
                 .hasMessage("Endereco não Encontrado!!");
 
+        verify(pessoaRepository).findById(1);
         verify(repository).findById(1);
         verify(repository, never()).save(any());
         verify(mapper, never()).toDomain(any());
